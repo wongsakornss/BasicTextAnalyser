@@ -23,4 +23,5 @@ Mini Project นี้เป้นส่วนหนึ่งของวิช�
 * **โค้ดทั้งหมดผ่านการทดสอบและส่วนติดต่อผู้ใช้รับการแก้ไขอย่างถูกต้องเพื่อรองรับตัวเลือกใหม่ทั้งหมด**
 ---
 ## Colab
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1feBqeFWY18Jg6czzTFQCIz3sQDX3SANq?usp=sharing)
+[![Basic Text Analyser (Sprint 1)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1W4lvCbtVkOzJ-nSn7xjizMMxwB3EQRmr?usp=sharing)
+[![Basic Text Analyser (Sprint 2)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1feBqeFWY18Jg6czzTFQCIz3sQDX3SANq?usp=sharing)
