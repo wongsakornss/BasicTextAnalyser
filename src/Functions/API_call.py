@@ -1,3 +1,5 @@
+import requests
+
 def fetch_text_from_api():
     try:
         response = requests.get("https://api.quotable.io/random", timeout=5, verify=False)
