@@ -1,37 +1,24 @@
-import TextAnalyser
-print("Text Analyser Program")
-sample = input("กรุณาใส่ข้อความที่ต้องการวิเคราะห์:\n")
+from Functions.API_text import API_text
+from Functions.Self_input import main_menu
+
 
 while True:
-    print("\n===== Basic Text Analyzer =====")
-    print("1. นับจำนวนตัวอักษร")
-    print("2. นับจำนวนคำ")
-    print("3. นับจำนวนประโยค")
-    print("4. นับสระ")
-    print("5. กลับข้อความ")
-    print("6. หาคำที่เจอบ่อยที่สุด")
-    print("7. ออกจากโปรแกรม")
 
-    choice = input("เลือกเมนู (1-7): ")
+  print("===== Basic Text Menu =====")
+  print("1. API Text")
+  print("2. Manual Input")
+  print("3. Exit")
 
-    if choice == "1":
-        print("ตัวอักษร (รวมช่องว่าง):", count_characters(sample, True))
-        print("ตัวอักษร (ไม่รวมช่องว่าง):", count_characters(sample, False))
-    elif choice == "2":
-        print("จำนวนคำ:", count_words(sample))
-    elif choice == "3":
-        print("จำนวนประโยค:", count_sentences(sample))
-    elif choice == "4":
-        vowels_cnt = count_vowels(sample)
-        print(f"จำนวนสระทั้งหมด: {vowels_cnt}")
-    elif choice == "5":
-        reversed_txt = reverse_text(sample)
-        print(f"ข้อความที่กลับแล้ว:\n{reversed_txt}")
-    elif choice == "6":
-        word, cnt = top_word(sample)
-        print(f"คำที่พบบ่อยที่สุดคือ '{word}' จำนวน {cnt} ครั้ง")
-    elif choice == "7":
-        print("จบการทำงาน")
-        break
-    else:
-        print("กรุณาเลือกใหม่ (1-7)")
+  user_menu = input("กรุณาเลือกรายการ: ")
+
+  if user_menu == "1":
+    num_range = int(input("กรุณาใส่จำนวนประโยค: "))
+    API_text(num_range)
+  elif user_menu == "2":
+    input_text = input("กรุณาใส่ข้อความ: ")
+    main_menu(input_text)
+  elif user_menu == "3":
+    print("จบการทำงาน")
+    break
+  else:
+    print("ไม่พบรายการที่เลือก\n")
