@@ -1,3 +1,4 @@
+import time
 from Functions.API_call import fetch_text_from_api
 from Functions.TextAnalyser import (
     count_characters,
