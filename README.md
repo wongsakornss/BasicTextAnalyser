@@ -30,6 +30,12 @@ Mini Project นี้เป้นส่วนหนึ่งของวิช�
 * **การนำข้อความจาก API มาทดสอบ**: ใช้ข้อความที่ดึงมาเพื่อทดสอบฟังก์ชันหลัก
 * **การสร้าง Docker Compose Container**: สร้างไฟล์ docker-compose.yml สำหรับรันโปรแกรมใน container
 
+### Sprint Final
+เป้าหมาย : แก้ไข Warning ของ API พัฒนาโปรแกรมเป็นเว็บแอปพลิเคชัน (Web Application) ด้วย **Flask Python** และ Deploy Web Application ด้วย Docker
+ผลลัพธ์ที่คาดหวัง :
+* แอปพลิเคชันสามารถทำงานได้อย่างราบรื่นและไม่เกิดข้อผิดพลาดรันในระหว่างการใช้งาน
+* User Interface เป็นระเบียบ และสามารถใช้งานได้ง่าย
+
 ---
 ## Colab
 **Basic Text Analyser (Sprint 1)** : [![Basic Text Analyser (Sprint 1)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1W4lvCbtVkOzJ-nSn7xjizMMxwB3EQRmr?usp=sharing)
@@ -37,3 +43,5 @@ Mini Project นี้เป้นส่วนหนึ่งของวิช�
 **Basic Text Analyser (Sprint 2)** : [![Basic Text Analyser (Sprint 2)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1feBqeFWY18Jg6czzTFQCIz3sQDX3SANq?usp=sharing)
 
 **Basic Text Analyser (Sprint 3)** : [![Basic Text Analyser (Sprint 3)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1WWpo8pjw2zo2S9Ok3KmOcgl17CpXyfGl?usp=sharing)
+
+**Basic Text Analyser (Sprint 4)** : [![Basic Text Analyser (Sprint Final)](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ENlN-CVAxITnFp-_sxVV6-9J_tk3S5St?usp=sharing)
