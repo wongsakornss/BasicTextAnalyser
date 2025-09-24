@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมวิเคราะห์ข้อความ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ลิงก์ไปยังไฟล์ CSS ที่แยกออกมา -->
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container bg-white p-8 rounded-xl shadow-lg w-full">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">โปรแกรมวิเคราะห์ข้อความ</h1>
+
+        <div class="space-y-8">
+            <!-- Manual Input Section -->
+            <div class="section-box">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">วิเคราะห์ข้อความด้วยตนเอง</h2>
+                <textarea id="manual-input" rows="5" placeholder="กรุณาใส่ข้อความที่นี่..." class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"></textarea>
+                <div class="mt-4 flex justify-end">
+                    <button id="analyze-manual-btn" class="btn-primary">วิเคราะห์</button>
+                </div>
+            </div>
+
+            <!-- API Fetch Section -->
+            <div class="section-box">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">ดึงและวิเคราะห์ข้อความจาก API</h2>
+                <div class="flex justify-end">
+                    <button id="analyze-api-btn" class="btn-primary">ดึงและวิเคราะห์</button>
+                </div>
+                <div id="loading-spinner" class="mt-4 hidden text-center">
+                    <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="text-gray-500 mt-2">กำลังโหลด...</p>
+                </div>
+            </div>
+
+            <!-- Analysis Options & Results Section -->
+            <div id="analysis-menu-container" class="section-box hidden">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">เมนูการวิเคราะห์</h2>
+                <div class="mb-4">
+                    <h3 class="text-xl font-medium mb-2">ข้อความต้นฉบับ:</h3>
+                    <p id="result-text" class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-gray-600 italic break-words"></p>
+                </div>
+                
+                <!-- Dropdown Menu -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <div class="flex-grow">
+                        <label for="analysis-select" class="block text-sm font-medium text-gray-700 mb-1">เลือกการวิเคราะห์:</label>
+                        <select id="analysis-select" class="w-full p-2 border border-gray-300 rounded-lg bg-white">
+                            <option value="" disabled selected>-- เลือกหัวข้อ --</option>
+                            <option value="char_count_with_spaces">นับตัวอักษร (รวมช่องว่าง)</option>
+                            <option value="char_count_without_spaces">นับตัวอักษร (ไม่รวมช่องว่าง)</option>
+                            <option value="word_count">นับจำนวนคำ</option>
+                            <option value="sentence_count">นับจำนวนประโยค</option>
+                            <option value="vowel_count">นับจำนวนสระ</option>
+                            <option value="reversed_text">กลับข้อความ</option>
+                            <option value="top_word_data">หาคำที่พบบ่อยที่สุด</option>
+                        </select>
+                    </div>
+                    <div class="flex-grow">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                        <button id="analyze-all-btn" class="btn-primary w-full">วิเคราะห์ทั้งหมด</button>
+                    </div>
+                </div>
+
+                <div id="analysis-result-display" class="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 id="analysis-title" class="text-lg font-semibold text-gray-700 mb-2">กรุณาเลือกเมนูวิเคราะห์...</h3>
+                    <p id="analysis-content" class="text-gray-600 break-words"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const manualInput = document.getElementById('manual-input');
+    const analyzeManualBtn = document.getElementById('analyze-manual-btn');
+    const analyzeApiBtn = document.getElementById('analyze-api-btn');
+    const analysisMenuContainer = document.getElementById('analysis-menu-container');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const resultText = document.getElementById('result-text');
+    const analysisTitle = document.getElementById('analysis-title');
+    const analysisContent = document.getElementById('analysis-content');
+    const analysisSelect = document.getElementById('analysis-select');
+    const analyzeAllBtn = document.getElementById('analyze-all-btn');
+
+    let lastAnalyzedData = null;
+
+    function showLoading(show) {
+        loadingSpinner.classList.toggle('hidden', !show);
+        analysisMenuContainer.classList.add('hidden');
+    }
+
+    function showAnalysisMenu(data) {
+        if (data.error) {
+            const messageBox = document.createElement('div');
+            messageBox.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4';
+            messageBox.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+                    <h3 class="text-lg font-bold mb-2">ข้อผิดพลาด</h3>
+                    <p>${data.error}</p>
+                    <button onclick="this.closest('.fixed').remove()" class="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg">ตกลง</button>
+                </div>
+            `;
+            document.body.appendChild(messageBox);
+            return;
+        }
+        
+        lastAnalyzedData = data;
+        resultText.textContent = data.text;
+        analysisMenuContainer.classList.remove('hidden');
+        // รีเซ็ตการแสดงผล
+        analysisSelect.value = '';
+        analysisTitle.textContent = 'กรุณาเลือกเมนูวิเคราะห์...';
+        analysisContent.textContent = '';
+    }
+
+    function displaySingleAnalysis(key) {
+        if (!lastAnalyzedData) return;
+
+        let title = '';
+        let content = '';
+
+        switch (key) {
+            case 'char_count_with_spaces':
+                title = 'จำนวนตัวอักษร (รวมช่องว่าง):';
+                content = lastAnalyzedData.char_count_with_spaces;
+                break;
+            case 'char_count_without_spaces':
+                title = 'จำนวนตัวอักษร (ไม่รวมช่องว่าง):';
+                content = lastAnalyzedData.char_count_without_spaces;
+                break;
+            case 'word_count':
+                title = 'จำนวนคำ:';
+                content = lastAnalyzedData.word_count;
+                break;
+            case 'sentence_count':
+                title = 'จำนวนประโยค:';
+                content = lastAnalyzedData.sentence_count;
+                break;
+            case 'vowel_count':
+                title = 'จำนวนสระทั้งหมด:';
+                content = lastAnalyzedData.vowel_count;
+                break;
+            case 'reversed_text':
+                title = 'ข้อความที่กลับแล้ว:';
+                content = lastAnalyzedData.reversed_text;
+                break;
+            case 'top_word_data':
+                title = 'คำที่พบบ่อยที่สุด:';
+                const [word, count] = lastAnalyzedData.top_word_data;
+                content = `${word} (${count} ครั้ง)`;
+                break;
+            default:
+                title = 'ไม่พบข้อมูล';
+                content = '';
+        }
+
+        analysisTitle.textContent = title;
+        analysisContent.textContent = content;
+    }
+
+    function displayAllAnalysis() {
+        if (!lastAnalyzedData) return;
+
+        let allResults = `
+            <div class="space-y-2">
+                <p><span class="font-semibold">จำนวนตัวอักษร (รวมช่องว่าง):</span> ${lastAnalyzedData.char_count_with_spaces}</p>
+                <p><span class="font-semibold">จำนวนตัวอักษร (ไม่รวมช่องว่าง):</span> ${lastAnalyzedData.char_count_without_spaces}</p>
+                <p><span class="font-semibold">จำนวนคำ:</span> ${lastAnalyzedData.word_count}</p>
+                <p><span class="font-semibold">จำนวนประโยค:</span> ${lastAnalyzedData.sentence_count}</p>
+                <p><span class="font-semibold">จำนวนสระทั้งหมด:</span> ${lastAnalyzedData.vowel_count}</p>
+                <p><span class="font-semibold">คำที่พบบ่อยที่สุด:</span> ${lastAnalyzedData.top_word_data[0]} (${lastAnalyzedData.top_word_data[1]} ครั้ง)</p>
+                <p><span class="font-semibold">ข้อความที่กลับแล้ว:</span> ${lastAnalyzedData.reversed_text}</p>
+            </div>
+        `;
+
+        analysisTitle.textContent = 'ผลการวิเคราะห์ทั้งหมด';
+        analysisContent.innerHTML = allResults;
+    }
+
+    analyzeManualBtn.addEventListener('click', async () => {
+        const text = manualInput.value;
+        if (!text) {
+            showAnalysisMenu({error: "กรุณาใส่ข้อความเพื่อวิเคราะห์"});
+            return;
+        }
+        
+        showLoading(true);
+        const response = await fetch('/analyze_manual', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
+        });
+        const data = await response.json();
+        showLoading(false);
+        showAnalysisMenu(data);
+    });
+
+    analyzeApiBtn.addEventListener('click', async () => {
+        showLoading(true);
+        const response = await fetch('/analyze_api', {
+            method: 'POST'
+        });
+        const data = await response.json();
+        showLoading(false);
+        showAnalysisMenu(data);
+    });
+
+    // เปลี่ยนจากปุ่มหลายปุ่มเป็นดรอปดาวน์
+    analysisSelect.addEventListener('change', () => {
+        const key = analysisSelect.value;
+        if (key) {
+            displaySingleAnalysis(key);
+        }
+    });
+
+    analyzeAllBtn.addEventListener('click', displayAllAnalysis);
+});
+
+    </script>
+</body>
+</html>
