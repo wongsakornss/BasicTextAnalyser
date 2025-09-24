@@ -1,15 +1,24 @@
-# ใช้ Python base image
-FROM python:3.12-slim
+# ใช้ base image ที่มี Python
+FROM python:3.10-slim
 
-# ตั้ง working directory
+# เปลี่ยน working directory ไปที่ src
 WORKDIR /app
 
-# คัดลอก requirements.txt และติดตั้ง
+# copy ไฟล์ requirements.txt ที่อยู่ใน root directory เข้าไปใน container
 COPY requirements.txt .
+
+# ติดตั้ง dependencies ที่อยู่ใน requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# คัดลอกโค้ดทั้งหมด
+# copy ไฟล์ทั้งหมดใน project เข้าไปใน container
 COPY . .
 
-# รัน pytest เพื่อทดสอบ (optional)
-CMD ["python", "src/main.py"]
+# ตั้งค่าให้ Python path มองเห็น module ใน src
+ENV PYTHONPATH=/app/src
+
+# กำหนด port ที่ app จะรัน
+EXPOSE 5000
+
+# คำสั่งสำหรับรัน app
+# app:app หมายถึงรัน app ที่ชื่อ app ในไฟล์ main.py
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
