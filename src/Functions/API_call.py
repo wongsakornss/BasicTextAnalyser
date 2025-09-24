@@ -1,10 +1,12 @@
 # ไฟล์สำหรับเรียกใช้งาน API
 import requests
+import warnings
 
 def fetch_text_from_api():
     """
     ดึงข้อความแบบสุ่มจาก API
     """
+    warnings.filterwarnings("ignore", message="Unverified HTTPS request is being made to host 'api.quotable.io'.")
     try:
         response = requests.get("https://api.quotable.io/random", timeout=10, verify=False)
         response.raise_for_status() # ตรวจสอบว่าเกิดข้อผิดพลาด HTTP หรือไม่
